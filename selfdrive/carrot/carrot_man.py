@@ -85,6 +85,8 @@ def get_path_after_distance(start_index, coordinates, current_position, distance
     closest_point = None
     min_distance = float('inf')
 
+    start_index = max(0, start_index - 2)
+
     # 가까운 점만 탐색하도록 수정
     for i in range(start_index, len(coordinates) - 1):
         p1 = coordinates[i]
