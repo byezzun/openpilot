@@ -338,12 +338,20 @@ class CarrotMan:
             out_speeds = [0] * len(speeds)
             out_speeds[-1] = speeds[-1]  # Set the last speed as the initial value
 
+            time_delay = self.carrot_serv.autoNaviSpeedCtrlEnd
+            time_wait = 0
             for i in range(len(speeds) - 2, -1, -1):
                 target_speed = speeds[i]
                 next_out_speed = out_speeds[i + 1]
 
+                if target_speed < next_out_speed:
+                  time_wait = - time_delay
+
                 # Calculate time interval for the current segment based on speed
                 time_interval = distance_interval / (next_out_speed / 3.6) if target_speed > 0 else 0
+
+                time_wait += time_interval
+                time_interval = max(0, time_interval + time_wait)
 
                 # Calculate maximum allowed speed with acceleration limit
                 max_allowed_speed = next_out_speed + (accel_limit_kmh * time_interval)
@@ -351,8 +359,9 @@ class CarrotMan:
 
                 out_speeds[i] = adjusted_speed
 
-            distance_advance = self.sm['carState'].vEgo * 3.0  # Advance distance by 3.0 seconds
-            out_speed = interp(distance_advance, distances, out_speeds)
+            #distance_advance = self.sm['carState'].vEgo * 3.0  # Advance distance by 3.0 seconds
+            #out_speed = interp(distance_advance, distances, out_speeds)
+            out_speed = out_speeds[0]    
     else:
         resampled_points = []
         curvatures = []
